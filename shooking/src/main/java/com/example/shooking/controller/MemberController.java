@@ -1,0 +1,109 @@
+package com.example.shooking.controller;
+
+import com.example.shooking.dto.ApiResponse;
+import com.example.shooking.dto.JwtResponse;
+import com.example.shooking.dto.LoginRequest;
+import com.example.shooking.dto.RegisterRequest;
+import com.example.shooking.entity.Member;
+import com.example.shooking.security.JwtTokenProvider;
+import com.example.shooking.service.MemberService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/member")
+public class MemberController {
+    private final MemberService memberService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider;
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+        try {
+            if (memberService.existsByEmail(registerRequest.getEmail())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.error("이미 존재하는 이메일입니다."));
+            }
+
+            Member member = new Member();
+            member.setEmail(registerRequest.getEmail());
+            member.setPassword(registerRequest.getPassword());
+            member.setNickname(registerRequest.getNickname());
+            member.setBirthDate(registerRequest.getBirthDate());
+            member.setRole("ROLE_USER");
+
+            Member savedMember = memberService.saveMember(member);
+
+            return ResponseEntity.ok().body(ApiResponse.success("회원가입이 완료되었습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("회원가입 중 오류가 발생했습니다."));
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
+
+            Member member = (Member) authentication.getPrincipal();
+            String jwt = tokenProvider.generateToken(member);
+
+            JwtResponse jwtResponse = new JwtResponse(jwt, member.getEmail(), member.getNickname(), member.getRole());
+
+            return ResponseEntity.ok().body(ApiResponse.success("로그인 성공", jwtResponse));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("이메일 또는 비밀번호가 잘못되었습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("로그인 중 오류가 발생했습니다."));
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok().body(ApiResponse.success("로그아웃되었습니다."));
+    }
+
+    @PostMapping("/validate")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        try {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            if (tokenProvider.validateToken(token)) {
+                String email = tokenProvider.getUsernameFromToken(token);
+                Member member = (Member) memberService.loadUserByUsername(email);
+
+                Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("email", member.getEmail());
+                userInfo.put("nickname", member.getNickname());
+                userInfo.put("role", member.getRole());
+
+                return ResponseEntity.ok().body(ApiResponse.success("유효한 토큰입니다.", userInfo));
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(ApiResponse.error("유효하지 않은 토큰입니다."));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("토큰 검증 중 오류가 발생했습니다."));
+        }
+    }
+}
