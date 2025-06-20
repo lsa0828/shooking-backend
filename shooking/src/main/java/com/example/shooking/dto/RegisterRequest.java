@@ -10,7 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
-    private String email;
+    private String username;
     private String password;
     private String nickname;
     private Date birthDate;

@@ -1,5 +1,6 @@
 package com.example.shooking.security;
 
+import com.example.shooking.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,12 +21,12 @@ public class JwtTokenProvider {
         this.JWT_EXPIRATION = jwtExpiration;
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(Member member) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_EXPIRATION);
 
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(member.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(JWT_KEY, SignatureAlgorithm.HS512)

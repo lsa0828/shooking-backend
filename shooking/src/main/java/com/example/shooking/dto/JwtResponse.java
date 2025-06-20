@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 public class JwtResponse {
     private String token;
     private String type = "Bearer";
-    private String email;
+    private String username;
     private String nickname;
     private String role;
 
-    public JwtResponse(String token, String email, String nickname, String role) {
+    public JwtResponse(String token, String username, String nickname, String role) {
         this.token = token;
-        this.email = email;
+        this.username = username;
         this.nickname = nickname;
         this.role = role;
     }

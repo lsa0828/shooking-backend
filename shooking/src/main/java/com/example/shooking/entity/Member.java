@@ -23,10 +23,9 @@ public class Member implements UserDetails {
             sequenceName = "member_seq",
             allocationSize = 1
     )
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
-    private String email;
+    private String username;
     private String password;
     private String nickname;
     @Column(name = "birth_date")
@@ -47,6 +46,6 @@ public class Member implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 }

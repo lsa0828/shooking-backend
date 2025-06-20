@@ -30,13 +30,13 @@ public class MemberController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
         try {
-            if (memberService.existsByEmail(registerRequest.getEmail())) {
+            if (memberService.existsByEmail(registerRequest.getUsername())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(ApiResponse.error("이미 존재하는 이메일입니다."));
             }
 
             Member member = new Member();
-            member.setEmail(registerRequest.getEmail());
+            member.setUsername(registerRequest.getUsername());
             member.setPassword(registerRequest.getPassword());
             member.setNickname(registerRequest.getNickname());
             member.setBirthDate(registerRequest.getBirthDate());
@@ -56,7 +56,7 @@ public class MemberController {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
+                            loginRequest.getUsername(),
                             loginRequest.getPassword()
                     )
             );
@@ -64,7 +64,7 @@ public class MemberController {
             Member member = (Member) authentication.getPrincipal();
             String jwt = tokenProvider.generateToken(member);
 
-            JwtResponse jwtResponse = new JwtResponse(jwt, member.getEmail(), member.getNickname(), member.getRole());
+            JwtResponse jwtResponse = new JwtResponse(jwt, member.getUsername(), member.getNickname(), member.getRole());
 
             return ResponseEntity.ok().body(ApiResponse.success("로그인 성공", jwtResponse));
         } catch (BadCredentialsException e) {
@@ -92,7 +92,7 @@ public class MemberController {
                 Member member = (Member) memberService.loadUserByUsername(email);
 
                 Map<String, Object> userInfo = new HashMap<>();
-                userInfo.put("email", member.getEmail());
+                userInfo.put("email", member.getUsername());
                 userInfo.put("nickname", member.getNickname());
                 userInfo.put("role", member.getRole());
 

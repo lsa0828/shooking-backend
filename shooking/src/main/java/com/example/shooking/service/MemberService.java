@@ -20,13 +20,13 @@ public class MemberService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Member loadUserByUsername(String email) throws UsernameNotFoundException {
-        return memberRepository.findOptionalByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+    public Member loadUserByUsername(String username) throws UsernameNotFoundException {
+        return memberRepository.findOptionalByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
-    public boolean existsByEmail(String email) {
-        return memberRepository.existsByEmail(email);
+    public boolean existsByEmail(String username) {
+        return memberRepository.existsByUsername(username);
     }
 
     public Member saveMember(Member member) {
