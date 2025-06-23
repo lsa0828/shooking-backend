@@ -1,6 +1,7 @@
 package com.example.shooking.service;
 
 import com.example.shooking.dto.ImageData;
+import com.example.shooking.dto.ProductDTO;
 import com.example.shooking.entity.Product;
 import com.example.shooking.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -56,15 +57,14 @@ public class ProductServiceTest {
         );
         when(productRepository.findAll()).thenReturn(mockList);
 
-        List<Product> result = productService.getAllProducts();
-        Product product = result.get(0);
+        List<ProductDTO> result = productService.getAllProducts();
+        ProductDTO product = result.get(0);
         Field[] fields = product.getClass().getDeclaredFields();
         assertEquals(1L, product.getId());
         assertEquals("브랜드1", product.getBrand());
         assertEquals("편한 신발", product.getDescription());
         assertEquals(16000, product.getPrice());
-        assertEquals("img1.jpg", product.getImagePath());
-        assertEquals(5, fields.length);
+        assertEquals(4, fields.length);
     }
 
     @Test

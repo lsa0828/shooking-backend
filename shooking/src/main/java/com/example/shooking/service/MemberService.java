@@ -26,9 +26,8 @@ public class MemberService implements UserDetailsService {
         return memberRepository.existsByUsername(username);
     }
 
-    public Member saveMember(Member member) {
+    public void saveMember(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         member.setJoinDate(LocalDate.now());
-        return memberRepository.save(member);
     }
 }
