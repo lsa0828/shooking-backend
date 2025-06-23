@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -29,9 +30,9 @@ public class Member implements UserDetails {
     private String password;
     private String nickname;
     @Column(name = "birth_date")
-    private Date birthDate;
+    private LocalDate birthDate;
     @Column(name = "join_date")
-    private Date joinDate;
+    private LocalDate joinDate;
     private String role;
 
     @Override

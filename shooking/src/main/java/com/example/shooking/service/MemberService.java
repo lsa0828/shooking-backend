@@ -3,15 +3,12 @@ package com.example.shooking.service;
 import com.example.shooking.entity.Member;
 import com.example.shooking.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +28,7 @@ public class MemberService implements UserDetailsService {
 
     public Member saveMember(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
-        member.setJoinDate(new Date());
+        member.setJoinDate(LocalDate.now());
         return memberRepository.save(member);
     }
 }

@@ -2,8 +2,9 @@ package com.example.shooking.integration;
 
 import com.example.shooking.entity.Product;
 import com.example.shooking.repository.ProductRepository;
-import org.junit.jupiter.api.AfterEach;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,13 +14,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class ProductIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
@@ -37,12 +38,8 @@ public class ProductIntegrationTest {
         Files.write(imageFile.toPath(), "fake image data".getBytes());
     }
 
-    @AfterEach
-    void cleanup() throws Exception {
-        Files.deleteIfExists(Path.of(TEST_IMAGE_PATH));
-    }
-
     @Test
+    @DisplayName("정상적인 모든 상품 정보 조회")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void testGetAllProducts() throws Exception {
         mockMvc.perform(get("/api/product/all"))
@@ -53,6 +50,7 @@ public class ProductIntegrationTest {
     }
 
     @Test
+    @DisplayName("정상적인 상품 이미지 조회")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void testGetImage() throws Exception {
         mockMvc.perform(get("/api/product/image/1"))

@@ -3,6 +3,7 @@ package com.example.shooking.controller;
 import com.example.shooking.dto.ImageData;
 import com.example.shooking.entity.Product;
 import com.example.shooking.service.ProductService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,6 +27,7 @@ public class ProductControllerTest {
     private ProductService productService;
 
     @Test
+    @DisplayName("정상적인 모든 상품 조회 API 요청")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void showAll_ShouldReturnProductList() throws Exception {
         List<Product> productList = List.of(
@@ -51,6 +53,7 @@ public class ProductControllerTest {
     }
 
     @Test
+    @DisplayName("정상적인 상품 이미지 조회 API 요청")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void showImage_ShouldReturnImageData() throws Exception {
         byte[] imageBytes = new byte[]{1, 2, 3}; // 임의 이미지 바이트

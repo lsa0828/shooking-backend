@@ -5,6 +5,7 @@ import com.example.shooking.entity.Product;
 import com.example.shooking.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,6 +48,7 @@ public class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("정상적인 모든 상품 정보 조회")
     void getAllProducts_ShouldReturnProductList() {
         List<Product> mockList = List.of(
                 new Product(1L, "브랜드1", "편한 신발", 16000, "img1.jpg"),
@@ -66,6 +68,7 @@ public class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("정상적인 상품 이미지 조회")
     void getImage_ShouldReturnImageData() throws IOException {
         Product product = new Product(1L, "브랜드", "신발", 10000, "img1.jpg");
         given(productRepository.findById(1L)).willReturn(Optional.of(product));
@@ -77,6 +80,7 @@ public class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("없는 상품 이미지 조회")
     void getImage_ShouldThrow_WhenProductNotFound() {
         given(productRepository.findById(1L)).willReturn(Optional.empty());
 
@@ -86,6 +90,7 @@ public class ProductServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 이미지 파일 조회")
     void getImage_ShouldThrow_WhenImageFileNotFound() {
         Product product = new Product(1L, "브랜드", "신발", 10000, "nonexistent.jpg");
         given(productRepository.findById(1L)).willReturn(Optional.of(product));
