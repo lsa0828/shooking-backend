@@ -40,7 +40,7 @@ public class MemberController {
             member.setPassword(registerRequest.getPassword());
             member.setNickname(registerRequest.getNickname());
             member.setBirthDate(registerRequest.getBirthDate());
-            member.setRole("ROLE_USER");
+            member.setRole("USER");
 
             Member savedMember = memberService.saveMember(member);
 

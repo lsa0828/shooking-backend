@@ -12,7 +12,7 @@ public class ProductDTO {
     private Long id;
     private String brand;
     private String description;
-    private Long price;
+    private Integer price;
 
     public ProductDTO(Product product) {
         this.id = product.getId();

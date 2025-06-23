@@ -20,7 +20,7 @@ public class Product {
     private Long id;
     private String brand;
     private String description;
-    private Long price;
+    private Integer price;
     @Column(name = "image_path")
     private String imagePath;
 }

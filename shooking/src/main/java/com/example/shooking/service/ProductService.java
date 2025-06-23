@@ -25,7 +25,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
 
-        File imageFile = new File("C:\\shooking\\ShookingShop\\shooking-shop\\public" + product.getImagePath());
+        File imageFile = new File("C:/shooking/ShookingShop/shooking-shop/public/" + product.getImagePath());
         if (!imageFile.exists()) {
             throw new FileNotFoundException("이미지 파일이 존재하지 않습니다.");
         }
