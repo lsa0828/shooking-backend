@@ -2,7 +2,6 @@ package com.example.shooking.controller;
 
 import com.example.shooking.dto.ImageData;
 import com.example.shooking.dto.ProductDTO;
-import com.example.shooking.entity.Product;
 import com.example.shooking.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
