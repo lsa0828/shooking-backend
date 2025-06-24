@@ -23,4 +23,11 @@ public class Product {
     private Integer price;
     @Column(name = "image_path")
     private String imagePath;
+
+    public Product(String brand, String description, Integer price, String imagePath) {
+        this.brand = brand;
+        this.description = description;
+        this.price = price;
+        this.imagePath = imagePath;
+    }
 }
