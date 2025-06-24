@@ -29,26 +29,20 @@ public class MemberController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        try {
-            if (memberService.existsByEmail(registerRequest.getUsername())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(ApiResponse.error("이미 존재하는 이메일입니다."));
-            }
-
-            Member member = new Member();
-            member.setUsername(registerRequest.getUsername());
-            member.setPassword(registerRequest.getPassword());
-            member.setNickname(registerRequest.getNickname());
-            member.setBirthDate(registerRequest.getBirthDate());
-            member.setRole("USER");
-
-            Member savedMember = memberService.saveMember(member);
-
-            return ResponseEntity.ok().body(ApiResponse.success("회원가입이 완료되었습니다."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("회원가입 중 오류가 발생했습니다."));
+        if (memberService.existsByEmail(registerRequest.getUsername())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("이미 존재하는 이메일입니다."));
         }
+
+        Member member = new Member();
+        member.setUsername(registerRequest.getUsername());
+        member.setPassword(registerRequest.getPassword());
+        member.setNickname(registerRequest.getNickname());
+        member.setBirthDate(registerRequest.getBirthDate());
+        member.setRole("USER");
+
+        memberService.saveMember(member);
+        return ResponseEntity.ok().body(ApiResponse.success("회원가입이 완료되었습니다."));
     }
 
     @PostMapping("/login")
@@ -70,9 +64,6 @@ public class MemberController {
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("이메일 또는 비밀번호가 잘못되었습니다."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("로그인 중 오류가 발생했습니다."));
         }
     }
 

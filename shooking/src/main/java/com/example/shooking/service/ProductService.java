@@ -1,6 +1,7 @@
 package com.example.shooking.service;
 
 import com.example.shooking.dto.ImageData;
+import com.example.shooking.dto.ProductDTO;
 import com.example.shooking.entity.Product;
 import com.example.shooking.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,14 +12,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDTO> getAllProducts() {
+        List<Product> productList = productRepository.findAll();
+        return productList.stream().map(ProductDTO::new).collect(Collectors.toList());
     }
 
     public ImageData getImage(Long id) throws IOException {

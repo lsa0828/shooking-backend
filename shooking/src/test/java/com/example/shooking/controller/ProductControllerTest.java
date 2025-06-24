@@ -1,7 +1,7 @@
 package com.example.shooking.controller;
 
 import com.example.shooking.dto.ImageData;
-import com.example.shooking.entity.Product;
+import com.example.shooking.dto.ProductDTO;
 import com.example.shooking.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,9 +30,9 @@ public class ProductControllerTest {
     @DisplayName("정상적인 모든 상품 조회 API 요청")
     @WithMockUser(username = "admin", roles = "ADMIN")
     void showAll_ShouldReturnProductList() throws Exception {
-        List<Product> productList = List.of(
-                new Product(1L, "브랜드1", "편한 신발", 16000, "img1.jpg"),
-                new Product(2L, "브랜드2", "멋진 신발", 15000, "img2.jpg")
+        List<ProductDTO> productList = List.of(
+                new ProductDTO(1L, "브랜드1", "편한 신발", 16000),
+                new ProductDTO(2L, "브랜드2", "멋진 신발", 15000)
         );
         given(productService.getAllProducts()).willReturn(productList);
 

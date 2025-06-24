@@ -40,7 +40,7 @@ public class ProductIntegrationTest {
 
     @Test
     @DisplayName("정상적인 모든 상품 정보 조회")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "ADMIN")
     void testGetAllProducts() throws Exception {
         mockMvc.perform(get("/api/product/all"))
                 .andExpect(status().isOk())
@@ -51,7 +51,7 @@ public class ProductIntegrationTest {
 
     @Test
     @DisplayName("정상적인 상품 이미지 조회")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "ADMIN")
     void testGetImage() throws Exception {
         mockMvc.perform(get("/api/product/image/1"))
                 .andExpect(status().isOk())

@@ -49,4 +49,13 @@ public class Member implements UserDetails {
     public String getUsername() {
         return username;
     }
+
+    public Member(String username, String password, String nickname, LocalDate birthDate, LocalDate joinDate, String role) {
+        this.username = username;
+        this.password = password;
+        this.nickname = nickname;
+        this.birthDate = birthDate;
+        this.joinDate = joinDate;
+        this.role = role;
+    }
 }

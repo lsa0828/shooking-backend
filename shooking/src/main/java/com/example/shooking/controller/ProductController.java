@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,14 +24,8 @@ public class ProductController {
 
     @GetMapping("/all")
     public ResponseEntity<?> showAll() {
-        try {
-            List<Product> products = productService.getAllProducts();
-            List<ProductDTO> dtos = products.stream().map(ProductDTO::new).collect(Collectors.toList());
-            return ResponseEntity.ok().body(ApiResponse.success("상품 조회", dtos));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("상품 조회 중 오류가 발생했습니다."));
-        }
+        List<ProductDTO> productList = productService.getAllProducts();
+        return ResponseEntity.ok().body(ApiResponse.success("상품 조회", productList));
     }
 
     @GetMapping("/image/{id}")
@@ -46,7 +41,7 @@ public class ProductController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error(e.getMessage()));
-        } catch (Exception e) {
+        } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("이미지를 불러오는 중 오류가 발생했습니다."));
         }
