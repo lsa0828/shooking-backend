@@ -67,11 +67,6 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok().body(ApiResponse.success("로그아웃되었습니다."));
-    }
-
     @PostMapping("/validate")
     public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
         try {
