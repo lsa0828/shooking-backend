@@ -27,13 +27,7 @@ public class CartService {
     public List<CartDTO> getProductsInCart(Long memberId) {
         List<Cart> cartList = cartRepository.findByMemberId(memberId);
         return cartList.stream()
-                .map(cart -> new CartDTO(
-                        cart.getProduct().getId(),
-                        cart.getProduct().getBrand(),
-                        cart.getProduct().getDescription(),
-                        cart.getProduct().getPrice(),
-                        cart.getQuantity()
-                ))
+                .map(CartDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +47,6 @@ public class CartService {
         } else {
             Product product = productRepository.findById(productId)
                             .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
-            CartId cartId = new CartId(memberId, productId);
             Cart newCart = new Cart(member, product, 1);
             cartRepository.save(newCart);
             return 1;

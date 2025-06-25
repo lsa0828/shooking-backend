@@ -1,14 +1,8 @@
 package com.example.shooking.service;
 
 import com.example.shooking.dto.OrderDTO;
-import com.example.shooking.entity.Cart;
-import com.example.shooking.entity.Member;
-import com.example.shooking.entity.OrderSheet;
-import com.example.shooking.entity.Product;
-import com.example.shooking.repository.CartRepository;
-import com.example.shooking.repository.MemberRepository;
-import com.example.shooking.repository.OrderRepository;
-import com.example.shooking.repository.ProductRepository;
+import com.example.shooking.entity.*;
+import com.example.shooking.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +19,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;
+    private final CardRepository cardRepository;
 
     public List<OrderDTO> getOrderList(Long memberId) {
         List<OrderSheet> orderSheets = orderRepository.findByMemberId(memberId);
@@ -34,18 +29,22 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public OrderDTO orderProduct(Long memberId, Long productId, Integer quantity) {
+    public OrderDTO orderProduct(Long memberId, Long productId, Long cardId, Integer quantity) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
-        OrderSheet order = orderRepository.save(new OrderSheet(member, product, quantity));
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new EntityNotFoundException("카드가 존재하지 않습니다."));
+        OrderSheet order = orderRepository.save(new OrderSheet(member, product, card, quantity));
         return new OrderDTO(order);
     }
 
-    public List<OrderDTO> orderProductsInCart(Long memberId) {
+    public List<OrderDTO> orderProductsInCart(Long memberId, Long cardId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
         List<Cart> cartList = cartRepository.findByMemberId(memberId);
         if (cartList == null || cartList.isEmpty()) {
             return new ArrayList<>();
@@ -55,7 +54,7 @@ public class OrderService {
         for (Cart cart : cartList) {
             Product product = productRepository.findById(cart.getProduct().getId())
                     .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
-            orderList.add(orderRepository.save(new OrderSheet(member, product, cart.getQuantity())));
+            orderList.add(orderRepository.save(new OrderSheet(member, product, card, cart.getQuantity())));
             cartRepository.deleteById(cart.getId());
         }
         return orderList.stream().map(OrderDTO::new).collect(Collectors.toList());

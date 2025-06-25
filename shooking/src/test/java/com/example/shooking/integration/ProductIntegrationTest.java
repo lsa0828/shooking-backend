@@ -58,4 +58,13 @@ public class ProductIntegrationTest {
                 .andExpect(content().contentType("image/jpeg;charset=UTF-8"))
                 .andExpect(content().bytes("fake image data".getBytes()));
     }
+
+    @Test
+    @DisplayName("존재하지 않는 상품 이미지 조회")
+    @WithMockUser(username = "test", roles = "ADMIN")
+    void testGetImage_WhenNotProduct() throws Exception {
+        mockMvc.perform(get("/api/product/image/99999"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("해당 상품이 존재하지 않습니다."));
+    }
 }

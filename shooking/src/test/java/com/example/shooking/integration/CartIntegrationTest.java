@@ -78,7 +78,7 @@ public class CartIntegrationTest {
     @DisplayName("정상적인 비어있는 장바구니 목록 조회")
     @WithMockUser(username = "test", roles = "USER")
     void testGetProductsInCart_EmptyCartList() throws Exception {
-        cartRepository.deleteAll();
+        cartRepository.deleteByMemberId(memberId);
         mockMvc.perform(get("/api/product/cart"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니가 비어 있습니다."))

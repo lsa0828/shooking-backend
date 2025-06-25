@@ -73,6 +73,7 @@ public class MemberIntegrationTest {
         member.setPassword(passwordEncoder.encode("1234"));
         member.setNickname("기존유저");
         member.setBirthDate(LocalDate.of(1995, 5, 5));
+        member.setJoinDate(LocalDate.now());
         member.setRole("USER");
         memberRepository.save(member);
 
@@ -97,6 +98,7 @@ public class MemberIntegrationTest {
         member.setPassword(passwordEncoder.encode("1234"));
         member.setNickname("로그인유저");
         member.setBirthDate(LocalDate.of(2000, 1, 2));
+        member.setJoinDate(LocalDate.now());
         member.setRole("USER");
         memberRepository.save(member);
 
