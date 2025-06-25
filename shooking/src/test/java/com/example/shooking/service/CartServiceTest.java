@@ -6,6 +6,7 @@ import com.example.shooking.entity.CartId;
 import com.example.shooking.entity.Member;
 import com.example.shooking.entity.Product;
 import com.example.shooking.repository.CartRepository;
+import com.example.shooking.repository.MemberRepository;
 import com.example.shooking.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ public class CartServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private MemberRepository memberRepository;
 
     @InjectMocks
     private CartService cartService;
@@ -107,6 +111,7 @@ public class CartServiceTest {
         Long productId = testProduct.getId();
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(null);
         given(productRepository.findById(productId)).willReturn(Optional.of(testProduct));
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         Integer quantity = cartService.toggleCartItem(memberId, productId);
         assertEquals(1, quantity);
@@ -118,6 +123,7 @@ public class CartServiceTest {
         Long memberId = member.getId();
         Long productId = product.getId();
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(mockList.get(0));
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         Integer quantity = cartService.toggleCartItem(memberId, productId);
         assertEquals(0, quantity);
@@ -130,6 +136,7 @@ public class CartServiceTest {
         Long productId = 1L;
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(null);
         given(productRepository.findById(productId)).willReturn(Optional.empty());
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         EntityNotFoundException e = assertThrows(EntityNotFoundException.class, () -> {
             cartService.toggleCartItem(memberId, productId);
@@ -146,6 +153,7 @@ public class CartServiceTest {
         CartId cartId = new CartId(memberId, productId);
         given(cartRepository.findById(cartId)).willReturn(Optional.empty());
         given(productRepository.findById(productId)).willReturn(Optional.of(testProduct));
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         Integer quantity = cartService.upsertCartItem(memberId, productId, 5);
         assertEquals(5, quantity);
@@ -159,6 +167,7 @@ public class CartServiceTest {
         CartId cartId = new CartId(memberId, productId);
         given(cartRepository.findById(cartId)).willReturn(Optional.of(mockList.get(0)));
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         Integer quantity = cartService.upsertCartItem(memberId, productId, 5);
         assertEquals(5, quantity);
@@ -172,7 +181,8 @@ public class CartServiceTest {
         CartId cartId = new CartId(memberId, productId);
         given(cartRepository.findById(cartId)).willReturn(Optional.of(mockList.get(0)));
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
-
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+        
         Integer quantity = cartService.upsertCartItem(memberId, productId, -5);
         assertEquals(0, quantity);
     }

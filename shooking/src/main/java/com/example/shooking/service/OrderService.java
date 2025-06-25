@@ -27,7 +27,9 @@ public class OrderService {
     private final MemberRepository memberRepository;
 
     public List<OrderDTO> getOrderList(Long memberId) {
-        return orderRepository.findByMemberId(memberId).stream()
+        List<OrderSheet> orderSheets = orderRepository.findByMemberId(memberId);
+        return orderSheets.stream()
+                .map(OrderDTO::new)
                 .sorted(Comparator.comparing(OrderDTO::getOrderedAt).reversed())
                 .collect(Collectors.toList());
     }
