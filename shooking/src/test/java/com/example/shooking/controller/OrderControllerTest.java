@@ -49,8 +49,8 @@ public class OrderControllerTest {
     void showOrderList_ShouldReturnOrderList() throws Exception {
         Long memberId = member.getId();
         List<OrderDTO> orderList = List.of(
-                new OrderDTO(1L, 2L, "브랜드1", "편한 신발", 16000, 1, LocalDate.of(2000, 6, 25)),
-                new OrderDTO(2L, 3L, "브랜드2", "멋진 신발", 15000, 3, LocalDate.of(2000, 6, 25))
+                new OrderDTO(1L, 2L, "브랜드1", "편한 신발", 16000, 1, LocalDate.of(2000, 6, 25), 2L, "0123"),
+                new OrderDTO(2L, 3L, "브랜드2", "멋진 신발", 15000, 3, LocalDate.of(2000, 6, 25), 2L, "0123")
         );
         given(orderService.getOrderList(memberId)).willReturn(orderList);
 
@@ -67,16 +67,19 @@ public class OrderControllerTest {
     void orderProduct_ShouldReturnOrder() throws Exception {
         Long memberId = member.getId();
         Long productId = 2L;
+        Long cardId = 2L;
         Integer quantity = 2;
-        OrderDTO order = new OrderDTO(1L, productId, "브랜드1", "편한 신발", 16000, quantity, LocalDate.of(2000, 6, 25));
-        given(orderService.orderProduct(memberId, productId, quantity)).willReturn(order);
+        OrderDTO order = new OrderDTO(1L, productId, "브랜드1", "편한 신발", 16000, quantity, LocalDate.of(2000, 6, 25), cardId, "0123");
+        given(orderService.orderProduct(memberId, productId, cardId, quantity)).willReturn(order);
 
-        mockMvc.perform(post("/api/order/2/2")
+        mockMvc.perform(post("/api/order/" + productId + "/" + cardId + "/" + quantity)
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("상품 주문"))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.brand").value("브랜드1"));
+                .andExpect(jsonPath("$.data.brand").value("브랜드1"))
+                .andExpect(jsonPath("$.data.cardId").value(2))
+                .andExpect(jsonPath("$.data.cardNumber").value("0123"));
     }
 
     @Test
@@ -84,19 +87,21 @@ public class OrderControllerTest {
     @WithMockUser(username = "test", roles = "USER")
     void orderProductsInCart_ShouldReturnOrderList() throws Exception {
         Long memberId = member.getId();
+        Long cardId = 2L;
         List<OrderDTO> orderList = List.of(
-                new OrderDTO(1L, 2L, "브랜드1", "편한 신발", 16000, 1, LocalDate.of(2000, 6, 25)),
-                new OrderDTO(2L, 3L, "브랜드2", "멋진 신발", 15000, 3, LocalDate.of(2000, 6, 25))
+                new OrderDTO(1L, 2L, "브랜드1", "편한 신발", 16000, 1, LocalDate.of(2000, 6, 25), cardId, "0123"),
+                new OrderDTO(2L, 3L, "브랜드2", "멋진 신발", 15000, 3, LocalDate.of(2000, 6, 25), cardId, "0123")
         );
-        given(orderService.orderProductsInCart(memberId)).willReturn(orderList);
+        given(orderService.orderProductsInCart(memberId, cardId)).willReturn(orderList);
 
-        mockMvc.perform(post("/api/order/cart")
+        mockMvc.perform(post("/api/order/cart/" + cardId)
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 목록 주문"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[0].id").value(1))
                 .andExpect(jsonPath("$.data[0].productId").value(2))
-                .andExpect(jsonPath("$.data[0].brand").value("브랜드1"));
+                .andExpect(jsonPath("$.data[0].brand").value("브랜드1"))
+                .andExpect(jsonPath("$.data[0].cardNumber").value("0123"));
     }
 }

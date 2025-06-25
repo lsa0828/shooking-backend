@@ -1,10 +1,7 @@
 package com.example.shooking.integration;
 
 import com.example.shooking.entity.*;
-import com.example.shooking.repository.CartRepository;
-import com.example.shooking.repository.MemberRepository;
-import com.example.shooking.repository.OrderRepository;
-import com.example.shooking.repository.ProductRepository;
+import com.example.shooking.repository.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -46,20 +43,26 @@ public class OrderIntegrationTest {
     private MemberRepository memberRepository;
 
     @Autowired
+    private CardRepository cardRepository;
+
+    @Autowired
     private OrderRepository orderRepository;
 
     private Long memberId;
     private Long productId;
+    private Long cardId;
 
     @BeforeEach
     void setup() throws Exception {
         Member member = memberRepository.save(new Member("test", "1234", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER"));
         Product product = productRepository.save(new Product("브랜드", "멋진 신발", 15000, "img.jpg"));
+        Card card = cardRepository.save(new Card(member, "0123456789012345", "0426", "tester", "012", "01"));
         memberId = member.getId();
         productId = product.getId();
+        cardId = card.getId();
         CartId cartId = new CartId(member.getId(), product.getId());
         cartRepository.save(new Cart(cartId, member, product, 2));
-        orderRepository.save(new OrderSheet(member, product, 5));
+        orderRepository.save(new OrderSheet(member, product, card, 5));
 
         Authentication auth = new UsernamePasswordAuthenticationToken(member, null, List.of(new SimpleGrantedAuthority("USER")));
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -75,7 +78,8 @@ public class OrderIntegrationTest {
                 .andExpect(jsonPath("$.message").value("주문 내역 조회"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[0].brand").value("브랜드"))
-                .andExpect(jsonPath("$.data[0].orderedAt").value(orderedAt));
+                .andExpect(jsonPath("$.data[0].orderedAt").value(orderedAt))
+                .andExpect(jsonPath("$.data[0].cardNumber").value("0123"));
     }
 
     @Test
@@ -83,20 +87,21 @@ public class OrderIntegrationTest {
     @WithMockUser(username = "test", roles = "USER")
     void testOrderProduct() throws Exception {
         String orderedAt = LocalDate.now().toString();
-        mockMvc.perform(post("/api/order/"+ productId +"/10")
+        mockMvc.perform(post("/api/order/"+ productId + "/" + cardId + "/10")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("상품 주문"))
                 .andExpect(jsonPath("$.data.brand").value("브랜드"))
                 .andExpect(jsonPath("$.data.quantity").value(10))
-                .andExpect(jsonPath("$.data.orderedAt").value(orderedAt));
+                .andExpect(jsonPath("$.data.orderedAt").value(orderedAt))
+                .andExpect(jsonPath("$.data.cardNumber").value("0123"));
     }
 
     @Test
     @DisplayName("존재하지 않는 상품 주문")
     @WithMockUser(username = "test", roles = "USER")
     void testOrderProduct_EmptyOrder() throws Exception {
-        mockMvc.perform(post("/api/order/9999/1")
+        mockMvc.perform(post("/api/order/9999/" + cardId + "/1")
                         .with(csrf()))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(containsString("상품이 존재하지 않습니다")));
@@ -106,7 +111,7 @@ public class OrderIntegrationTest {
     @DisplayName("정상적인 장바구니 상품 목록 주문")
     @WithMockUser(username = "test", roles = "USER")
     void testOrderProductsInCart() throws Exception {
-        mockMvc.perform(post("/api/order/cart")
+        mockMvc.perform(post("/api/order/cart/" + cardId)
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 목록 주문"))

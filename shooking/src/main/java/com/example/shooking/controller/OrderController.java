@@ -24,17 +24,17 @@ public class OrderController {
         return ResponseEntity.ok(ApiResponse.success("주문 내역 조회", orderList));
     }
 
-    @PostMapping("/{productId}/{quantity}")
-    public ResponseEntity<?> orderProduct(@CurrentMember Member member, @PathVariable Long productId, @PathVariable Integer quantity) {
+    @PostMapping("/{productId}/{cardId}/{quantity}")
+    public ResponseEntity<?> orderProduct(@CurrentMember Member member, @PathVariable Long productId, @PathVariable Long cardId, @PathVariable Integer quantity) {
         Long memberId = member.getId();
-        OrderDTO order = orderService.orderProduct(memberId, productId, quantity);
+        OrderDTO order = orderService.orderProduct(memberId, productId, cardId, quantity);
         return ResponseEntity.ok(ApiResponse.success("상품 주문", order));
     }
 
-    @PostMapping("/cart")
-    public ResponseEntity<?> orderProductsInCart(@CurrentMember Member member) {
+    @PostMapping("/cart/{cardId}")
+    public ResponseEntity<?> orderProductsInCart(@CurrentMember Member member, @PathVariable Long cardId) {
         Long memberId = member.getId();
-        List<OrderDTO> orderList = orderService.orderProductsInCart(memberId);
+        List<OrderDTO> orderList = orderService.orderProductsInCart(memberId, cardId);
         return ResponseEntity.ok(ApiResponse.success("장바구니 상품 목록 주문", orderList));
     }
 }

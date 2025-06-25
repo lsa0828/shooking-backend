@@ -15,22 +15,29 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFound(EntityNotFoundException e) {
-        log.error("Unexpected entity error,", e);
+        log.error("Unexpected entity error: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.error(e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGenericException(Exception e) {
-        log.error("Unexpected server error", e);
+        log.error("Unexpected server error: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("서버 오류가 발생했습니다."));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolation(DataIntegrityViolationException e) {
-        log.error("Unexpected data error", e);
+        log.error("Unexpected data error: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error("필수 값이 누락되었습니다."));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException e) {
+        log.warn("Unexpected request: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error(e.getMessage()));
     }
 }
