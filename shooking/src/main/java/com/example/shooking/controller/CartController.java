@@ -6,7 +6,6 @@ import com.example.shooking.entity.Member;
 import com.example.shooking.security.CurrentMember;
 import com.example.shooking.service.CartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,13 +37,15 @@ public class CartController {
 
     @PatchMapping("/{productId}")
     public ResponseEntity<?> toggleCartItem(@CurrentMember Member member, @PathVariable Long productId) {
-        Integer quantity = cartService.toggleCartItem(member, productId);
+        Long memberId = member.getId();
+        Integer quantity = cartService.toggleCartItem(memberId, productId);
         return ResponseEntity.ok(ApiResponse.success("장바구니 상품 담김 여부 변경", quantity));
     }
 
     @PatchMapping("/{productId}/{quantity}")
     public ResponseEntity<?> upsertCartItem(@CurrentMember Member member, @PathVariable Long productId, @PathVariable Integer quantity) {
-        Integer savedQuantity = cartService.upsertCartItem(member, productId, quantity);
+        Long memberId = member.getId();
+        Integer savedQuantity = cartService.upsertCartItem(memberId, productId, quantity);
         return ResponseEntity.ok(ApiResponse.success("장바구니 상품 수량 변경 또는 저장", savedQuantity));
     }
 

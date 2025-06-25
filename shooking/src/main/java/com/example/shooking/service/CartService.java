@@ -6,6 +6,7 @@ import com.example.shooking.entity.CartId;
 import com.example.shooking.entity.Member;
 import com.example.shooking.entity.Product;
 import com.example.shooking.repository.CartRepository;
+import com.example.shooking.repository.MemberRepository;
 import com.example.shooking.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 public class CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final MemberRepository memberRepository;
 
     public List<CartDTO> getProductsInCart(Long memberId) {
         List<Cart> cartList = cartRepository.findByMemberId(memberId);
@@ -41,8 +43,9 @@ public class CartService {
     }
 
     @Transactional
-    public Integer toggleCartItem(Member member, Long productId) {
-        Long memberId = member.getId();
+    public Integer toggleCartItem(Long memberId, Long productId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
         Cart cart = cartRepository.findByMemberIdAndProductId(memberId, productId);
         if (cart != null) {
             cartRepository.deleteByMemberIdAndProductId(memberId, productId);
@@ -58,8 +61,9 @@ public class CartService {
     }
 
     @Transactional
-    public Integer upsertCartItem(Member member, Long productId, Integer quantity) {
-        Long memberId = member.getId();
+    public Integer upsertCartItem(Long memberId, Long productId, Integer quantity) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
         CartId cartId = new CartId(memberId, productId);

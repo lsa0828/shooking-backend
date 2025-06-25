@@ -1,5 +1,7 @@
 package com.example.shooking.service;
 
+import com.example.shooking.dto.MemberDTO;
+import com.example.shooking.dto.RegisterRequest;
 import com.example.shooking.entity.Member;
 import com.example.shooking.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +28,15 @@ public class MemberService implements UserDetailsService {
         return memberRepository.existsByUsername(username);
     }
 
-    public void saveMember(Member member) {
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
+    public MemberDTO saveMember(RegisterRequest registerRequest) {
+        Member member = new Member();
+        member.setUsername(registerRequest.getUsername());
+        member.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        member.setNickname(registerRequest.getNickname());
+        member.setBirthDate(registerRequest.getBirthDate());
         member.setJoinDate(LocalDate.now());
+        member.setRole("USER");
+        Member registeredMember = memberRepository.save(member);
+        return new MemberDTO(registeredMember);
     }
 }

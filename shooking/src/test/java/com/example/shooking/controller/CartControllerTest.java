@@ -47,7 +47,7 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("정상적인 장바구니 목록 조회 API 요청")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "USER")
     void showProductInCart_ShouldReturnCartList() throws Exception {
         Long memberId = member.getId();
         List<CartDTO> cartList = List.of(
@@ -67,7 +67,7 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("정상적인 비어있는 장바구니 목록 조회 API 요청")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "USER")
     void showProductInCart_ShouldReturnEmptyCartList() throws Exception {
         Long memberId = member.getId();
         List<CartDTO> cartList = new ArrayList<>();
@@ -82,7 +82,7 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("정상적인 장바구니 상품 수량 조회 API 요청")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "USER")
     void showQuantityOfProductInCart_ShouldReturnQuantity() throws Exception {
         Long memberId = member.getId();
         Long productId = 1L;
@@ -97,11 +97,12 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("정상적인 장바구니 상품 담기 API 요청")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "USER")
     void toggleCartItem_ShouldReturnQuantity() throws Exception {
+        Long memberId = member.getId();
         Long productId = 1L;
         Integer quantity = 1;
-        given(cartService.toggleCartItem(member, productId)).willReturn(quantity);
+        given(cartService.toggleCartItem(memberId, productId)).willReturn(quantity);
 
         mockMvc.perform(patch("/api/product/cart/1")
                         .with(csrf()))
@@ -112,11 +113,12 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("정상적인 장바구니 상품 수량 변경 또는 저장 API 요청")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "USER")
     void upsertCartItem_ShouldReturnQuantity() throws Exception {
+        Long memberId = member.getId();
         Long productId = 1L;
         Integer quantity = 3;
-        given(cartService.upsertCartItem(member, productId, quantity)).willReturn(quantity);
+        given(cartService.upsertCartItem(memberId, productId, quantity)).willReturn(quantity);
 
         mockMvc.perform(patch("/api/product/cart/1/3")
                         .with(csrf()))
@@ -127,7 +129,7 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("정상적인 장바구니 목록 삭제 API 요청")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "USER")
     void deleteProductsInCart_ShouldSucceed() throws Exception {
         Long memberId = member.getId();
         willDoNothing().given(cartService).deleteProductsInCart(memberId);
@@ -140,7 +142,7 @@ public class CartControllerTest {
 
     @Test
     @DisplayName("정상적인 장바구니 상품 삭제 API 요청")
-    @WithMockUser(username = "admin", roles = "ADMIN")
+    @WithMockUser(username = "test", roles = "USER")
     void deleteCartItem_ShouldSucceed() throws Exception {
         Long memberId = member.getId();
         Long productId = 1L;
