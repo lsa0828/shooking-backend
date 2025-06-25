@@ -47,8 +47,9 @@ public class MyControllerTest {
     @DisplayName("정상적인 내 정보 조회 API 요청")
     @WithMockUser(username = "test", roles = "USER")
     void showMyInfo_ShouldReturnMemberDTO() throws Exception {
+        Long memberId = member.getId();
         MemberDTO dto = new MemberDTO(1L, "test", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER");
-        given(myService.getMyInfo(member)).willReturn(dto);
+        given(myService.getMyInfo(memberId)).willReturn(dto);
 
         mockMvc.perform(get("/api/me"))
                 .andExpect(status().isOk())

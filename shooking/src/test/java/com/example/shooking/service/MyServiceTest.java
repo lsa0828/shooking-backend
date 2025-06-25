@@ -22,8 +22,9 @@ public class MyServiceTest {
     @DisplayName("정상적인 내 정보 조회")
     void getMyInfo_ShouldReturnMemberDTO() throws Exception {
         Member member = new Member(1L, "test", "1234", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER");
+        Long memberId = member.getId();
 
-        MemberDTO dto = myService.getMyInfo(member);
+        MemberDTO dto = myService.getMyInfo(memberId);
         Field[] fields = dto.getClass().getDeclaredFields();
         assertEquals(1L, member.getId());
         assertEquals("test", member.getUsername());

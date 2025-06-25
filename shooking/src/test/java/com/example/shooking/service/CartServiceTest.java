@@ -108,7 +108,7 @@ public class CartServiceTest {
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(null);
         given(productRepository.findById(productId)).willReturn(Optional.of(testProduct));
 
-        Integer quantity = cartService.toggleCartItem(member, productId);
+        Integer quantity = cartService.toggleCartItem(memberId, productId);
         assertEquals(1, quantity);
     }
 
@@ -119,7 +119,7 @@ public class CartServiceTest {
         Long productId = product.getId();
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(mockList.get(0));
 
-        Integer quantity = cartService.toggleCartItem(member, productId);
+        Integer quantity = cartService.toggleCartItem(memberId, productId);
         assertEquals(0, quantity);
     }
 
@@ -132,7 +132,7 @@ public class CartServiceTest {
         given(productRepository.findById(productId)).willReturn(Optional.empty());
 
         EntityNotFoundException e = assertThrows(EntityNotFoundException.class, () -> {
-            cartService.toggleCartItem(member, productId);
+            cartService.toggleCartItem(memberId, productId);
         });
         assertThat(e.getMessage()).isEqualTo("상품이 존재하지 않습니다.");
     }
@@ -147,7 +147,7 @@ public class CartServiceTest {
         given(cartRepository.findById(cartId)).willReturn(Optional.empty());
         given(productRepository.findById(productId)).willReturn(Optional.of(testProduct));
 
-        Integer quantity = cartService.upsertCartItem(member, productId, 5);
+        Integer quantity = cartService.upsertCartItem(memberId, productId, 5);
         assertEquals(5, quantity);
     }
 
@@ -160,7 +160,7 @@ public class CartServiceTest {
         given(cartRepository.findById(cartId)).willReturn(Optional.of(mockList.get(0)));
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
 
-        Integer quantity = cartService.upsertCartItem(member, productId, 5);
+        Integer quantity = cartService.upsertCartItem(memberId, productId, 5);
         assertEquals(5, quantity);
     }
 
@@ -173,7 +173,7 @@ public class CartServiceTest {
         given(cartRepository.findById(cartId)).willReturn(Optional.of(mockList.get(0)));
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
 
-        Integer quantity = cartService.upsertCartItem(member, productId, -5);
+        Integer quantity = cartService.upsertCartItem(memberId, productId, -5);
         assertEquals(0, quantity);
     }
 

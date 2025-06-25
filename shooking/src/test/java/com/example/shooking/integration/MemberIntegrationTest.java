@@ -41,7 +41,7 @@ public class MemberIntegrationTest {
 
     @BeforeEach
     void setup() {
-        memberRepository.deleteAll();
+        memberRepository.deleteByUsername("test");
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
@@ -59,7 +59,10 @@ public class MemberIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("회원가입이 완료되었습니다."));
+                .andExpect(jsonPath("$.message").value("회원가입이 완료되었습니다."))
+                .andExpect(jsonPath("$.data.username").value("test"))
+                .andExpect(jsonPath("$.data.nickname").value("테스트유저"))
+                .andExpect(jsonPath("$.data.role").value("USER"));
     }
 
     @Test

@@ -25,14 +25,17 @@ public class Member implements UserDetails {
             allocationSize = 1
     )
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     private String nickname;
-    @Column(name = "birth_date")
+    @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
-    @Column(name = "join_date")
+    @Column(name = "join_date", nullable = false)
     private LocalDate joinDate;
+    @Column(nullable = false)
     private String role;
 
     @Override

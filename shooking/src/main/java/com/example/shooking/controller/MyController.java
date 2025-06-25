@@ -20,7 +20,8 @@ public class MyController {
 
     @GetMapping
     public ResponseEntity<?> showMyInfo(@CurrentMember Member member) {
-        MemberDTO dto = myService.getMyInfo(member);
+        Long memberId = member.getId();
+        MemberDTO dto = myService.getMyInfo(memberId);
         return ResponseEntity.ok(ApiResponse.success("내 정보 조회", dto));
     }
 

@@ -1,9 +1,6 @@
 package com.example.shooking.controller;
 
-import com.example.shooking.dto.ApiResponse;
-import com.example.shooking.dto.JwtResponse;
-import com.example.shooking.dto.LoginRequest;
-import com.example.shooking.dto.RegisterRequest;
+import com.example.shooking.dto.*;
 import com.example.shooking.entity.Member;
 import com.example.shooking.security.JwtTokenProvider;
 import com.example.shooking.service.MemberService;
@@ -33,16 +30,8 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error("이미 존재하는 이메일입니다."));
         }
-
-        Member member = new Member();
-        member.setUsername(registerRequest.getUsername());
-        member.setPassword(registerRequest.getPassword());
-        member.setNickname(registerRequest.getNickname());
-        member.setBirthDate(registerRequest.getBirthDate());
-        member.setRole("USER");
-
-        memberService.saveMember(member);
-        return ResponseEntity.ok().body(ApiResponse.success("회원가입이 완료되었습니다."));
+        MemberDTO dto = memberService.saveMember(registerRequest);
+        return ResponseEntity.ok().body(ApiResponse.success("회원가입이 완료되었습니다.", dto));
     }
 
     @PostMapping("/login")

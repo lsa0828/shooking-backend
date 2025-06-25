@@ -18,10 +18,13 @@ public class Product {
             allocationSize = 1
     )
     private Long id;
+    @Column(nullable = false)
     private String brand;
+    @Column(nullable = false)
     private String description;
+    @Column(nullable = false)
     private Integer price;
-    @Column(name = "image_path")
+    @Column(name = "image_path", nullable = false)
     private String imagePath;
 
     public Product(String brand, String description, Integer price, String imagePath) {

@@ -5,20 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart {
-    @EmbeddedId
-    private CartId id;
+@Table(name = "order_sheet")
+public class OrderSheet {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq_gen")
+    @SequenceGenerator(
+            name = "order_seq_gen",
+            sequenceName = "order_seq",
+            allocationSize = 1
+    )
+    private Long id;
 
-    @MapsId("memberId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @MapsId("productId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -26,10 +33,13 @@ public class Cart {
     @Column(nullable = false)
     private Integer quantity;
 
-    public Cart(Member member, Product product, Integer quantity) {
-        this.id = new CartId(member.getId(), product.getId());
+    @Column(name = "ordered_at", nullable = false)
+    private LocalDate orderedAt;
+
+    public OrderSheet(Member member, Product product, Integer quantity) {
         this.member = member;
         this.product = product;
         this.quantity = quantity;
+        this.orderedAt = LocalDate.now();
     }
 }
