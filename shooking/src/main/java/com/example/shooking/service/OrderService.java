@@ -36,6 +36,9 @@ public class OrderService {
                 .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new EntityNotFoundException("카드가 존재하지 않습니다."));
+        if (!card.getMember().equals(member)) {
+            throw new IllegalArgumentException("해당 카드가 회원의 카드가 아닙니다.");
+        }
         OrderSheet order = orderRepository.save(new OrderSheet(member, product, card, quantity));
         return new OrderDTO(order);
     }
@@ -44,7 +47,10 @@ public class OrderService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("카드가 존재하지 않습니다."));
+        if (!card.getMember().equals(member)) {
+            throw new IllegalArgumentException("해당 카드가 회원의 카드가 아닙니다.");
+        }
         List<Cart> cartList = cartRepository.findByMemberId(memberId);
         if (cartList == null || cartList.isEmpty()) {
             return new ArrayList<>();

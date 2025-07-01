@@ -2,6 +2,7 @@ package com.example.shooking.dto;
 
 import com.example.shooking.entity.Cart;
 import com.example.shooking.entity.Product;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,7 +18,7 @@ public class CartDTO {
     public CartDTO(Cart cart) {
         Product product = cart.getProduct();
         this.productId = product.getId();
-        this.brand = product.getBrand();
+        this.brand = product.getBrand().getName();
         this.description = product.getDescription();
         this.price = product.getPrice();
         this.quantity = cart.getQuantity();

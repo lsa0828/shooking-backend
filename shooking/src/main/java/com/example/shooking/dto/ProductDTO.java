@@ -16,7 +16,7 @@ public class ProductDTO {
 
     public ProductDTO(Product product) {
         this.id = product.getId();
-        this.brand = product.getBrand();
+        this.brand = product.getBrand().getName();
         this.description = product.getDescription();
         this.price = product.getPrice();
     }

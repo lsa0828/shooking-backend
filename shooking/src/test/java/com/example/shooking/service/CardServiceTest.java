@@ -6,6 +6,7 @@ import com.example.shooking.entity.Card;
 import com.example.shooking.entity.Member;
 import com.example.shooking.repository.CardRepository;
 import com.example.shooking.repository.MemberRepository;
+import com.example.shooking.util.AESUtil;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +32,9 @@ public class CardServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private AESUtil aesUtil;
 
     @InjectMocks
     private CardService cardService;
@@ -66,6 +70,9 @@ public class CardServiceTest {
         Card savedCard = new Card(2L, member, "0123456789012345", "0426", "tester", "012", "01");
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
         given(cardRepository.save(card)).willReturn(savedCard);
+        given(aesUtil.encrypt(card.getCardNumber())).willReturn("0123456789012345");
+        given(aesUtil.encrypt(card.getSecurityCode())).willReturn("012");
+        given(aesUtil.encrypt(card.getPassword())).willReturn("01");
 
         CardResponse result = cardService.addCard(memberId, cardDTO);
         assertEquals(2L, result.getId());

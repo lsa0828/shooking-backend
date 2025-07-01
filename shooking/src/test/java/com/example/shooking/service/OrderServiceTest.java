@@ -57,7 +57,8 @@ public class OrderServiceTest {
     @Test
     @DisplayName("정상적인 주문 내역 조회")
     void getOrderList_ShouldReturnOrderList() throws Exception {
-        Product product = new Product(2L, "브랜드2", "멋진 신발", 15000, "img2.jpg");
+        Brand brand1 = new Brand(1L, "브랜드2");
+        Product product = new Product(2L, brand1, "멋진 신발", 15000, "img2.jpg");
         List<OrderSheet> orderList = List.of(
                 new OrderSheet(3L, member, product, card, 2, LocalDate.now())
         );
@@ -76,7 +77,8 @@ public class OrderServiceTest {
     @Test
     @DisplayName("정상적인 상품 주문")
     void orderProduct_ShouldReturnOrderDTO() throws Exception {
-        Product product = new Product(2L, "브랜드2", "멋진 신발", 15000, "img2.jpg");
+        Brand brand1 = new Brand(1L, "브랜드2");
+        Product product = new Product(2L, brand1, "멋진 신발", 15000, "img2.jpg");
         Long productId = product.getId();
         OrderSheet orderSheet = new OrderSheet(member, product, card, 2);
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
@@ -107,7 +109,8 @@ public class OrderServiceTest {
     @Test
     @DisplayName("정상적인 장바구니 상품 목록 주문")
     void orderProductsInCart_ShouldReturnOrderList() throws Exception {
-        Product product = new Product(2L, "브랜드2", "멋진 신발", 15000, "img2.jpg");
+        Brand brand1 = new Brand(1L, "브랜드2");
+        Product product = new Product(2L, brand1, "멋진 신발", 15000, "img2.jpg");
         Long productId = product.getId();
         Integer quantity = 2;
         CartId cartId = new CartId(memberId, productId);

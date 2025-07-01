@@ -2,6 +2,7 @@ package com.example.shooking.service;
 
 import com.example.shooking.dto.ImageData;
 import com.example.shooking.dto.ProductDTO;
+import com.example.shooking.entity.Brand;
 import com.example.shooking.entity.Product;
 import com.example.shooking.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -51,9 +52,11 @@ public class ProductServiceTest {
     @Test
     @DisplayName("정상적인 모든 상품 정보 조회")
     void getAllProducts_ShouldReturnProductList() {
+        Brand brand1 = new Brand(1L, "브랜드1");
+        Brand brand2 = new Brand(2L, "브랜드2");
         List<Product> mockList = List.of(
-                new Product(1L, "브랜드1", "편한 신발", 16000, "img1.jpg"),
-                new Product(2L, "브랜드2", "멋진 신발", 15000, "img2.jpg")
+                new Product(1L, brand1, "편한 신발", 16000, "img1.jpg"),
+                new Product(2L, brand2, "멋진 신발", 15000, "img2.jpg")
         );
         when(productRepository.findAll()).thenReturn(mockList);
 
@@ -70,7 +73,8 @@ public class ProductServiceTest {
     @Test
     @DisplayName("정상적인 상품 이미지 조회")
     void getImage_ShouldReturnImageData() throws IOException {
-        Product product = new Product(1L, "브랜드", "신발", 10000, "img1.jpg");
+        Brand brand1 = new Brand(1L, "브랜드1");
+        Product product = new Product(1L, brand1, "신발", 10000, "img1.jpg");
         given(productRepository.findById(1L)).willReturn(Optional.of(product));
 
         ImageData result = productService.getImage(1L);
@@ -92,7 +96,8 @@ public class ProductServiceTest {
     @Test
     @DisplayName("존재하지 않는 이미지 파일 조회")
     void getImage_ShouldThrow_WhenImageFileNotFound() {
-        Product product = new Product(1L, "브랜드", "신발", 10000, "nonexistent.jpg");
+        Brand brand1 = new Brand(1L, "브랜드1");
+        Product product = new Product(1L, brand1, "신발", 10000, "nonexistent.jpg");
         given(productRepository.findById(1L)).willReturn(Optional.of(product));
 
         assertThrows(FileNotFoundException.class, () -> {

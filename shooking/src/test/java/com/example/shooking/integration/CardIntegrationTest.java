@@ -92,7 +92,6 @@ public class CardIntegrationTest {
                         .content(objectMapper.writeValueAsString(cardDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("카드 추가"))
-                .andExpect(jsonPath("$.data.cardNumber").value("0123456789012345"))
                 .andExpect(jsonPath("$.data.cardholder").value("tester"));
     }
 

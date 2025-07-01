@@ -4,6 +4,7 @@ import com.example.shooking.dto.*;
 import com.example.shooking.entity.Member;
 import com.example.shooking.security.JwtTokenProvider;
 import com.example.shooking.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class MemberController {
     private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
         if (memberService.existsByEmail(registerRequest.getUsername())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.error("이미 존재하는 이메일입니다."));
@@ -35,7 +36,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

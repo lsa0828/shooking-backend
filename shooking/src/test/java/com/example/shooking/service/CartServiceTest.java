@@ -1,10 +1,7 @@
 package com.example.shooking.service;
 
 import com.example.shooking.dto.CartDTO;
-import com.example.shooking.entity.Cart;
-import com.example.shooking.entity.CartId;
-import com.example.shooking.entity.Member;
-import com.example.shooking.entity.Product;
+import com.example.shooking.entity.*;
 import com.example.shooking.repository.CartRepository;
 import com.example.shooking.repository.MemberRepository;
 import com.example.shooking.repository.ProductRepository;
@@ -47,8 +44,9 @@ public class CartServiceTest {
 
     @BeforeEach
     void setup() throws Exception {
+        Brand brand1 = new Brand(1L, "브랜드2");
         member = new Member(1L, "test", "1234", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER");
-        product = new Product(2L, "브랜드2", "멋진 신발", 15000, "img2.jpg");
+        product = new Product(2L, brand1, "멋진 신발", 15000, "img2.jpg");
         CartId id = new CartId(member.getId(), product.getId());
         mockList = List.of(
                 new Cart(id, member, product, 2)
@@ -107,7 +105,8 @@ public class CartServiceTest {
     @DisplayName("정상적인 장바구니에서 상품 담김으로 변경")
     void toggleCartItem_ShouldReturnQuantity() throws Exception {
         Long memberId = member.getId();
-        Product testProduct = new Product(3L, "브랜드3", "예쁜 신발", 14000, "img3.jpg");
+        Brand brand1 = new Brand(1L, "브랜드1");
+        Product testProduct = new Product(3L, brand1, "예쁜 신발", 14000, "img3.jpg");
         Long productId = testProduct.getId();
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(null);
         given(productRepository.findById(productId)).willReturn(Optional.of(testProduct));
@@ -148,7 +147,8 @@ public class CartServiceTest {
     @DisplayName("정상적인 장바구니에 담긴 상품 수량 저장")
     void upsertCartItem_ShouldReturnSavedQuantity() throws Exception {
         Long memberId = member.getId();
-        Product testProduct = new Product(3L, "브랜드3", "예쁜 신발", 14000, "img3.jpg");
+        Brand brand1 = new Brand(1L, "브랜드1");
+        Product testProduct = new Product(3L, brand1, "예쁜 신발", 14000, "img3.jpg");
         Long productId = testProduct.getId();
         CartId cartId = new CartId(memberId, productId);
         given(cartRepository.findById(cartId)).willReturn(Optional.empty());

@@ -1,9 +1,7 @@
 package com.example.shooking.integration;
 
-import com.example.shooking.entity.Cart;
-import com.example.shooking.entity.CartId;
-import com.example.shooking.entity.Member;
-import com.example.shooking.entity.Product;
+import com.example.shooking.entity.*;
+import com.example.shooking.repository.BrandRepository;
 import com.example.shooking.repository.CartRepository;
 import com.example.shooking.repository.MemberRepository;
 import com.example.shooking.repository.ProductRepository;
@@ -38,6 +36,9 @@ public class CartIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private BrandRepository brandRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -52,7 +53,8 @@ public class CartIntegrationTest {
     @BeforeEach
     void setup() throws Exception {
         Member member = memberRepository.save(new Member("test", "1234", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER"));
-        Product product = productRepository.save(new Product("브랜드2", "멋진 신발", 15000, "img2.jpg"));
+        Brand brand1 = brandRepository.save(new Brand("브랜드2"));
+        Product product = productRepository.save(new Product(brand1, "멋진 신발", 15000, "img2.jpg"));
         memberId = member.getId();
         productId = product.getId();
         CartId cartId = new CartId(member.getId(), product.getId());
@@ -100,7 +102,8 @@ public class CartIntegrationTest {
     @DisplayName("정상적인 장바구니에 상품 담기 요청")
     @WithMockUser(username = "test", roles = "USER")
     void testToggleCartItem_set() throws Exception {
-        Product testProduct = productRepository.save(new Product("브랜드3", "예쁜 신발", 14000, "img3.jpg"));
+        Brand brand1 = new Brand(1L, "브랜드3");
+        Product testProduct = productRepository.save(new Product(brand1, "예쁜 신발", 14000, "img3.jpg"));
         mockMvc.perform(patch("/api/product/cart/" + testProduct.getId())
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -134,7 +137,8 @@ public class CartIntegrationTest {
     @DisplayName("정상적인 장바구니에 담긴 상품 수량 저장")
     @WithMockUser(username = "test", roles = "USER")
     void testUpsertCartItem_set() throws Exception {
-        Product testProduct = productRepository.save(new Product("브랜드3", "예쁜 신발", 14000, "img3.jpg"));
+        Brand brand1 = new Brand(1L, "브랜드3");
+        Product testProduct = productRepository.save(new Product(brand1, "예쁜 신발", 14000, "img3.jpg"));
         mockMvc.perform(patch("/api/product/cart/" + testProduct.getId() + "/3")
                         .with(csrf()))
                 .andExpect(status().isOk())

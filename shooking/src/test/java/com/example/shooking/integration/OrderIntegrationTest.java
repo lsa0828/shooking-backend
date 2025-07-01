@@ -34,6 +34,9 @@ public class OrderIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private BrandRepository brandRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -55,7 +58,8 @@ public class OrderIntegrationTest {
     @BeforeEach
     void setup() throws Exception {
         Member member = memberRepository.save(new Member("test", "1234", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER"));
-        Product product = productRepository.save(new Product("브랜드", "멋진 신발", 15000, "img.jpg"));
+        Brand brand1 = brandRepository.save(new Brand("브랜드"));
+        Product product = productRepository.save(new Product(brand1, "멋진 신발", 15000, "img.jpg"));
         Card card = cardRepository.save(new Card(member, "0123456789012345", "0426", "tester", "012", "01"));
         memberId = member.getId();
         productId = product.getId();

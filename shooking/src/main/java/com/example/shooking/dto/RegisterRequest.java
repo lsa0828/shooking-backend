@@ -1,18 +1,23 @@
 package com.example.shooking.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegisterRequest {
+    @NotBlank(message = "유저네임은 필수입니다.")
     private String username;
+    @NotBlank(message = "비밀번호는 필수입니다.")
     private String password;
+    @NotBlank(message = "닉네임은 필수입니다.")
     private String nickname;
+    @NotNull(message = "생일은 필수입니다.")
     private LocalDate birthDate;
 }
