@@ -31,30 +31,29 @@ public class CartService {
                 .collect(Collectors.toList());
     }
 
-    public Integer getQuantityOfProductInCart(Long memberId, Long productId) {
+    public CartDTO getQuantityOfProductInCart(Long memberId, Long productId) {
         Cart cart = cartRepository.findByMemberIdAndProductId(memberId, productId);
-        return (cart != null) ? cart.getQuantity() : 0;
+        return (cart != null) ? new CartDTO(cart) : null;
     }
 
     @Transactional
-    public Integer toggleCartItem(Long memberId, Long productId) {
+    public CartDTO toggleCartItem(Long memberId, Long productId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
         Cart cart = cartRepository.findByMemberIdAndProductId(memberId, productId);
         if (cart != null) {
             cartRepository.deleteByMemberIdAndProductId(memberId, productId);
-            return 0;
+            return null;
         } else {
             Product product = productRepository.findById(productId)
                             .orElseThrow(() -> new EntityNotFoundException("상품이 존재하지 않습니다."));
-            Cart newCart = new Cart(member, product, 1);
-            cartRepository.save(newCart);
-            return 1;
+            Cart savedCart = cartRepository.save(new Cart(member, product, 1));
+            return new CartDTO(savedCart);
         }
     }
 
     @Transactional
-    public Integer upsertCartItem(Long memberId, Long productId, Integer quantity) {
+    public CartDTO upsertCartItem(Long memberId, Long productId, Integer quantity) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
         Product product = productRepository.findById(productId)
@@ -64,7 +63,7 @@ public class CartService {
 
         if (quantity <= 0) {
             optionalCart.ifPresent(cartRepository::delete);
-            return 0;
+            return null;
         }
 
         Cart cart;
@@ -74,8 +73,8 @@ public class CartService {
         } else {
             cart = new Cart(member, product, quantity);
         }
-        cartRepository.save(cart);
-        return quantity;
+        Cart savedCart = cartRepository.save(cart);
+        return new CartDTO(savedCart);
     }
 
     @Transactional

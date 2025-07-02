@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CartDTO {
-    private Long productId;
+    private Long id;
     private String brand;
     private String description;
     private Integer price;
@@ -17,7 +17,7 @@ public class CartDTO {
 
     public CartDTO(Cart cart) {
         Product product = cart.getProduct();
-        this.productId = product.getId();
+        this.id = product.getId();
         this.brand = product.getBrand().getName();
         this.description = product.getDescription();
         this.price = product.getPrice();

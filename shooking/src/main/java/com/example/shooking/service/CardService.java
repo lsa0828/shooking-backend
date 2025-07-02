@@ -25,6 +25,7 @@ public class CardService {
     public List<CardResponse> getCardList(Long memberId) {
         List<Card> cardList = cardRepository.findByMemberId(memberId);
         return cardList.stream()
+                .map(this::getDecryptedCard)
                 .map(CardResponse::new)
                 .collect(Collectors.toList());
     }
@@ -33,7 +34,7 @@ public class CardService {
     public CardResponse addCard(Long memberId, CardDTO cardDTO) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("회원이 존재하지 않습니다."));
-        Card card = setEncryptedCard(new Card(member, cardDTO));
+        Card card = getEncryptedCard(new Card(member, cardDTO));
         Card savedCard = cardRepository.save(card);
         return new CardResponse(savedCard);
     }
@@ -48,10 +49,17 @@ public class CardService {
         cardRepository.delete(card);
     }
 
-    public Card setEncryptedCard(Card card) {
+    public Card getEncryptedCard(Card card) {
         card.setCardNumber(aesUtil.encrypt(card.getCardNumber()));
         card.setSecurityCode(aesUtil.encrypt(card.getSecurityCode()));
         card.setPassword(aesUtil.encrypt(card.getPassword()));
+        return card;
+    }
+
+    public Card getDecryptedCard(Card card) {
+        card.setCardNumber(aesUtil.decrypt(card.getCardNumber()));
+        card.setSecurityCode(aesUtil.decrypt(card.getSecurityCode()));
+        card.setPassword(aesUtil.encrypt((card.getPassword())));
         return card;
     }
 }

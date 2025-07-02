@@ -61,7 +61,7 @@ public class CartServiceTest {
 
         List<CartDTO> result = cartService.getProductsInCart(memberId);
         CartDTO cart = result.get(0);
-        assertEquals(2L, cart.getProductId());
+        assertEquals(2L, cart.getId());
         assertEquals("브랜드2", cart.getBrand());
         assertEquals("멋진 신발", cart.getDescription());
         assertEquals(15000, cart.getPrice());
@@ -86,8 +86,9 @@ public class CartServiceTest {
         Long productId = product.getId();
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(mockList.get(0));
 
-        Integer quantity = cartService.getQuantityOfProductInCart(memberId, productId);
-        assertEquals(2, quantity);
+        CartDTO cartDTO = cartService.getQuantityOfProductInCart(memberId, productId);
+        assertEquals(2L, cartDTO.getId());
+        assertEquals("브랜드2", cartDTO.getBrand());
     }
 
     @Test
@@ -97,8 +98,8 @@ public class CartServiceTest {
         Long productId = 3L;
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(null);
 
-        Integer quantity = cartService.getQuantityOfProductInCart(memberId, productId);
-        assertEquals(0, quantity);
+        CartDTO cartDTO = cartService.getQuantityOfProductInCart(memberId, productId);
+        assertNull(cartDTO);
     }
 
     @Test
@@ -107,13 +108,16 @@ public class CartServiceTest {
         Long memberId = member.getId();
         Brand brand1 = new Brand(1L, "브랜드1");
         Product testProduct = new Product(3L, brand1, "예쁜 신발", 14000, "img3.jpg");
+        CartId id = new CartId(member.getId(), testProduct.getId());
+        Cart cart = new Cart(id, member, testProduct, 1);
         Long productId = testProduct.getId();
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(null);
         given(productRepository.findById(productId)).willReturn(Optional.of(testProduct));
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+        given(cartRepository.save(cart)).willReturn(cart);
 
-        Integer quantity = cartService.toggleCartItem(memberId, productId);
-        assertEquals(1, quantity);
+        CartDTO cartDTO = cartService.toggleCartItem(memberId, productId);
+        assertEquals(1, cartDTO.getQuantity());
     }
 
     @Test
@@ -124,8 +128,8 @@ public class CartServiceTest {
         given(cartRepository.findByMemberIdAndProductId(memberId, productId)).willReturn(mockList.get(0));
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
-        Integer quantity = cartService.toggleCartItem(memberId, productId);
-        assertEquals(0, quantity);
+        CartDTO cartDTO = cartService.toggleCartItem(memberId, productId);
+        assertNull(cartDTO);
     }
 
     @Test
@@ -149,14 +153,17 @@ public class CartServiceTest {
         Long memberId = member.getId();
         Brand brand1 = new Brand(1L, "브랜드1");
         Product testProduct = new Product(3L, brand1, "예쁜 신발", 14000, "img3.jpg");
+        CartId id = new CartId(member.getId(), testProduct.getId());
+        Cart cart = new Cart(id, member, testProduct, 5);
         Long productId = testProduct.getId();
         CartId cartId = new CartId(memberId, productId);
         given(cartRepository.findById(cartId)).willReturn(Optional.empty());
         given(productRepository.findById(productId)).willReturn(Optional.of(testProduct));
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+        given(cartRepository.save(cart)).willReturn(cart);
 
-        Integer quantity = cartService.upsertCartItem(memberId, productId, 5);
-        assertEquals(5, quantity);
+        CartDTO cartDTO = cartService.upsertCartItem(memberId, productId, 5);
+        assertEquals(5, cartDTO.getQuantity());
     }
 
     @Test
@@ -165,12 +172,14 @@ public class CartServiceTest {
         Long memberId = member.getId();
         Long productId = product.getId();
         CartId cartId = new CartId(memberId, productId);
+        Cart cart = new Cart(cartId, member, product, 5);
         given(cartRepository.findById(cartId)).willReturn(Optional.of(mockList.get(0)));
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+        given(cartRepository.save(cart)).willReturn(cart);
 
-        Integer quantity = cartService.upsertCartItem(memberId, productId, 5);
-        assertEquals(5, quantity);
+        CartDTO cartDTO = cartService.upsertCartItem(memberId, productId, 5);
+        assertEquals(5, cartDTO.getQuantity());
     }
 
     @Test
@@ -183,8 +192,8 @@ public class CartServiceTest {
         given(productRepository.findById(productId)).willReturn(Optional.of(product));
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
         
-        Integer quantity = cartService.upsertCartItem(memberId, productId, -5);
-        assertEquals(0, quantity);
+        CartDTO cartDTO = cartService.upsertCartItem(memberId, productId, -5);
+        assertNull(cartDTO);
     }
 
     @Test

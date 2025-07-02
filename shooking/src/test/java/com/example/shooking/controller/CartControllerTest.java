@@ -56,7 +56,7 @@ public class CartControllerTest {
         );
         given(cartService.getProductsInCart(memberId)).willReturn(cartList);
 
-        mockMvc.perform(get("/api/product/cart"))
+        mockMvc.perform(get("/api/cart"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 조회"))
                 .andExpect(jsonPath("$.data").isArray())
@@ -73,7 +73,7 @@ public class CartControllerTest {
         List<CartDTO> cartList = new ArrayList<>();
         given(cartService.getProductsInCart(memberId)).willReturn(cartList);
 
-        mockMvc.perform(get("/api/product/cart"))
+        mockMvc.perform(get("/api/cart"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니가 비어 있습니다."))
                 .andExpect(jsonPath("$.data").isArray())
@@ -86,13 +86,13 @@ public class CartControllerTest {
     void showQuantityOfProductInCart_ShouldReturnQuantity() throws Exception {
         Long memberId = member.getId();
         Long productId = 1L;
-        Integer quantity = 2;
-        given(cartService.getQuantityOfProductInCart(memberId, productId)).willReturn(quantity);
+        CartDTO cartDTO = new CartDTO(1L, "브랜드1", "편한 신발", 16000, 1);
+        given(cartService.getQuantityOfProductInCart(memberId, productId)).willReturn(cartDTO);
 
-        mockMvc.perform(get("/api/product/cart/1"))
+        mockMvc.perform(get("/api/cart/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 수량 조회"))
-                .andExpect(jsonPath("$.data").value(2));
+                .andExpect(jsonPath("$.data.quantity").value(1));
     }
 
     @Test
@@ -101,14 +101,14 @@ public class CartControllerTest {
     void toggleCartItem_ShouldReturnQuantity() throws Exception {
         Long memberId = member.getId();
         Long productId = 1L;
-        Integer quantity = 1;
-        given(cartService.toggleCartItem(memberId, productId)).willReturn(quantity);
+        CartDTO cartDTO = new CartDTO(1L, "브랜드1", "편한 신발", 16000, 1);
+        given(cartService.toggleCartItem(memberId, productId)).willReturn(cartDTO);
 
-        mockMvc.perform(patch("/api/product/cart/1")
+        mockMvc.perform(patch("/api/cart/1")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 담김 여부 변경"))
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data.quantity").value(1));
     }
 
     @Test
@@ -118,13 +118,14 @@ public class CartControllerTest {
         Long memberId = member.getId();
         Long productId = 1L;
         Integer quantity = 3;
-        given(cartService.upsertCartItem(memberId, productId, quantity)).willReturn(quantity);
+        CartDTO cartDTO = new CartDTO(1L, "브랜드1", "편한 신발", 16000, 3);
+        given(cartService.upsertCartItem(memberId, productId, quantity)).willReturn(cartDTO);
 
-        mockMvc.perform(patch("/api/product/cart/1/3")
+        mockMvc.perform(patch("/api/cart/1/3")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 수량 변경 또는 저장"))
-                .andExpect(jsonPath("$.data").value(3));
+                .andExpect(jsonPath("$.data.quantity").value(3));
     }
 
     @Test
@@ -134,7 +135,7 @@ public class CartControllerTest {
         Long memberId = member.getId();
         willDoNothing().given(cartService).deleteProductsInCart(memberId);
 
-        mockMvc.perform(delete("/api/product/cart")
+        mockMvc.perform(delete("/api/cart")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 삭제"));
@@ -148,7 +149,7 @@ public class CartControllerTest {
         Long productId = 1L;
         willDoNothing().given(cartService).deleteCartItem(memberId, productId);
 
-        mockMvc.perform(delete("/api/product/cart/1")
+        mockMvc.perform(delete("/api/cart/1")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 삭제"));
