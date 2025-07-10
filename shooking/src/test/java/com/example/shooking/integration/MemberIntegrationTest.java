@@ -87,7 +87,7 @@ public class MemberIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("이미 존재하는 이메일입니다."));
+                .andExpect(jsonPath("$.message").value("이미 존재하는 아이디입니다."));
     }
 
     @Test
@@ -128,6 +128,6 @@ public class MemberIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("이메일 또는 비밀번호가 잘못되었습니다."));
+                .andExpect(jsonPath("$.message").value("아이디 또는 비밀번호가 잘못되었습니다."));
     }
 }

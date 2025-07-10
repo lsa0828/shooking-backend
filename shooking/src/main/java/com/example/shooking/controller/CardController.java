@@ -26,6 +26,13 @@ public class CardController {
         return ResponseEntity.ok(ApiResponse.success("카드 목록 조회", cardList));
     }
 
+    @GetMapping("/{cardId}")
+    public ResponseEntity<?> showCard(@CurrentMember Member member, @PathVariable Long cardId) {
+        Long memberId = member.getId();
+        CardResponse card = cardService.getCard(memberId, cardId);
+        return ResponseEntity.ok(ApiResponse.success("카드 조회", card));
+    }
+
     @PostMapping("/add")
     public ResponseEntity<?> addCard(@CurrentMember Member member, @RequestBody @Valid CardDTO cardDTO) {
         Long memberId = member.getId();

@@ -30,6 +30,15 @@ public class CardService {
                 .collect(Collectors.toList());
     }
 
+    public CardResponse getCard(Long memberId, Long cardId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new EntityNotFoundException("카드가 존재하지 않습니다."));
+        if (!card.getMember().getId().equals(memberId)) {
+            throw new IllegalArgumentException("회원이 일치하지 않습니다.");
+        }
+        return new CardResponse(getDecryptedCard(card));
+    }
+
     @Transactional
     public CardResponse addCard(Long memberId, CardDTO cardDTO) {
         Member member = memberRepository.findById(memberId)

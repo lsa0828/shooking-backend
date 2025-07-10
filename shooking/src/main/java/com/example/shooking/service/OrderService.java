@@ -3,6 +3,7 @@ package com.example.shooking.service;
 import com.example.shooking.dto.OrderDTO;
 import com.example.shooking.entity.*;
 import com.example.shooking.repository.*;
+import com.example.shooking.util.AESUtil;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,17 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final MemberRepository memberRepository;
     private final CardRepository cardRepository;
+    private final AESUtil aesUtil;
 
     public List<OrderDTO> getOrderList(Long memberId) {
         List<OrderSheet> orderSheets = orderRepository.findByMemberId(memberId);
         return orderSheets.stream()
-                .map(OrderDTO::new)
+                .map(orderSheet -> {
+                    OrderDTO dto = new OrderDTO(orderSheet);
+                    String decryptedCardNumber = aesUtil.decrypt(dto.getCardNumber());
+                    dto.setCardNumber(decryptedCardNumber.substring(0, 4));
+                    return dto;
+                })
                 .sorted(Comparator.comparing(OrderDTO::getOrderedAt).reversed())
                 .collect(Collectors.toList());
     }

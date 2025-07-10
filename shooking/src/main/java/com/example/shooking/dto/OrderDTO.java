@@ -34,6 +34,6 @@ public class OrderDTO {
         this.quantity = orderSheet.getQuantity();
         this.orderedAt = orderSheet.getOrderedAt();
         this.cardId = card.getId();
-        this.cardNumber = card.getCardNumber().substring(0, 4);
+        this.cardNumber = card.getCardNumber();
     }
 }

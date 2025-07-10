@@ -65,6 +65,21 @@ public class CardControllerTest {
     }
 
     @Test
+    @DisplayName("정상적인 카드 조회 API 요청")
+    @WithMockUser(username = "test", roles = "USER")
+    void showCard_ShouldReturnCard() throws Exception {
+        Long memberId = member.getId();
+        CardResponse card = new CardResponse(1L, "0123456789012345", "0526", "tester");
+        Long cardId = card.getId();
+        given(cardService.getCard(memberId, cardId)).willReturn(card);
+
+        mockMvc.perform(get("/api/card/" + cardId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("카드 조회"))
+                .andExpect(jsonPath("$.data.id").value(1));
+    }
+
+    @Test
     @DisplayName("정상적인 카드 추가 API 요청")
     @WithMockUser(username = "test", roles = "USER")
     void addCard_ShouldReturnCard() throws Exception {

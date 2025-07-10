@@ -4,6 +4,7 @@ import com.example.shooking.dto.CardDTO;
 import com.example.shooking.entity.*;
 import com.example.shooking.repository.CardRepository;
 import com.example.shooking.repository.MemberRepository;
+import com.example.shooking.service.CardService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,9 @@ public class CardIntegrationTest {
     private CardRepository cardRepository;
 
     @Autowired
+    private CardService cardService;
+
+    @Autowired
     private MemberRepository memberRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -50,7 +54,8 @@ public class CardIntegrationTest {
     @BeforeEach
     void setup() throws Exception {
         Member member = memberRepository.save(new Member("test", "1234", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER"));
-        Card card = cardRepository.save(new Card(member, "0123456789012345", "0426", "tester", "012", "01"));
+        Card encryptedCard = cardService.getEncryptedCard(new Card(member, "0123456789012345", "0426", "tester", "012", "01"));
+        Card card = cardRepository.save(encryptedCard);
         memberId = member.getId();
         cardId = card.getId();
 
@@ -79,6 +84,16 @@ public class CardIntegrationTest {
                 .andExpect(jsonPath("$.message").value("카드 목록 조회"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @Test
+    @DisplayName("정상적인 카드 조회")
+    @WithMockUser(username = "test", roles = "USER")
+    void testGetCard() throws Exception {
+        mockMvc.perform(get("/api/card/" + cardId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("카드 조회"))
+                .andExpect(jsonPath("$.data.expirationDate").value("0426"));
     }
 
     @Test

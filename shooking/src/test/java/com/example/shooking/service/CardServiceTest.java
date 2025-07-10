@@ -63,6 +63,18 @@ public class CardServiceTest {
     }
 
     @Test
+    @DisplayName("정상적인 카드 조회")
+    void getCard_ShouldReturnCard() throws Exception {
+        Card card = new Card(2L, member, "0123456789012345", "0426", "tester", "012", "01");
+        Long cardId = card.getId();
+        given(cardRepository.findById(cardId)).willReturn(Optional.of(card));
+
+        CardResponse result = cardService.getCard(memberId, cardId);
+        assertEquals(2L, result.getId());
+        assertEquals("0426", result.getExpirationDate());
+    }
+
+    @Test
     @DisplayName("정상적인 카드 추가")
     void addCard_ShouldReturnAddedCard() throws Exception {
         CardDTO cardDTO = new CardDTO(2L, "0123456789012345", "0426", "tester", "012", "01");
