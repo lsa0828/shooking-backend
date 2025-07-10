@@ -6,6 +6,7 @@ import com.example.shooking.dto.CardResponse;
 import com.example.shooking.entity.Member;
 import com.example.shooking.security.CurrentMember;
 import com.example.shooking.service.CardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +26,15 @@ public class CardController {
         return ResponseEntity.ok(ApiResponse.success("카드 목록 조회", cardList));
     }
 
+    @GetMapping("/{cardId}")
+    public ResponseEntity<?> showCard(@CurrentMember Member member, @PathVariable Long cardId) {
+        Long memberId = member.getId();
+        CardResponse card = cardService.getCard(memberId, cardId);
+        return ResponseEntity.ok(ApiResponse.success("카드 조회", card));
+    }
+
     @PostMapping("/add")
-    public ResponseEntity<?> addCard(@CurrentMember Member member, @RequestBody CardDTO cardDTO) {
+    public ResponseEntity<?> addCard(@CurrentMember Member member, @RequestBody @Valid CardDTO cardDTO) {
         Long memberId = member.getId();
         CardResponse card = cardService.addCard(memberId, cardDTO);
         return ResponseEntity.ok(ApiResponse.success("카드 추가", card));

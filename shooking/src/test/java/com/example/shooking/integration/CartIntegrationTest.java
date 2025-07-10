@@ -1,9 +1,7 @@
 package com.example.shooking.integration;
 
-import com.example.shooking.entity.Cart;
-import com.example.shooking.entity.CartId;
-import com.example.shooking.entity.Member;
-import com.example.shooking.entity.Product;
+import com.example.shooking.entity.*;
+import com.example.shooking.repository.BrandRepository;
 import com.example.shooking.repository.CartRepository;
 import com.example.shooking.repository.MemberRepository;
 import com.example.shooking.repository.ProductRepository;
@@ -38,6 +36,9 @@ public class CartIntegrationTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private BrandRepository brandRepository;
+
+    @Autowired
     private ProductRepository productRepository;
 
     @Autowired
@@ -52,7 +53,8 @@ public class CartIntegrationTest {
     @BeforeEach
     void setup() throws Exception {
         Member member = memberRepository.save(new Member("test", "1234", "테스트유저", LocalDate.of(2000, 1, 3), LocalDate.of(2025, 6, 24), "USER"));
-        Product product = productRepository.save(new Product("브랜드2", "멋진 신발", 15000, "img2.jpg"));
+        Brand brand1 = brandRepository.save(new Brand("브랜드2"));
+        Product product = productRepository.save(new Product(brand1, "멋진 신발", 15000, "img2.jpg"));
         memberId = member.getId();
         productId = product.getId();
         CartId cartId = new CartId(member.getId(), product.getId());
@@ -67,7 +69,7 @@ public class CartIntegrationTest {
     @DisplayName("정상적인 장바구니 목록 조회")
     @WithMockUser(username = "test", roles = "USER")
     void testGetProductsInCart() throws Exception {
-        mockMvc.perform(get("/api/product/cart"))
+        mockMvc.perform(get("/api/cart"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 조회"))
                 .andExpect(jsonPath("$.data").isArray())
@@ -79,7 +81,7 @@ public class CartIntegrationTest {
     @WithMockUser(username = "test", roles = "USER")
     void testGetProductsInCart_EmptyCartList() throws Exception {
         cartRepository.deleteByMemberId(memberId);
-        mockMvc.perform(get("/api/product/cart"))
+        mockMvc.perform(get("/api/cart"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니가 비어 있습니다."))
                 .andExpect(jsonPath("$.data").isArray())
@@ -90,63 +92,65 @@ public class CartIntegrationTest {
     @DisplayName("정상적인 장바구니 상품 수량 조회")
     @WithMockUser(username = "test", roles = "USER")
     void testGetQuantityOfProductInCart() throws Exception {
-        mockMvc.perform(get("/api/product/cart/" + productId))
+        mockMvc.perform(get("/api/cart/" + productId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 수량 조회"))
-                .andExpect(jsonPath("$.data").value(2));
+                .andExpect(jsonPath("$.data.quantity").value(2));
     }
 
     @Test
     @DisplayName("정상적인 장바구니에 상품 담기 요청")
     @WithMockUser(username = "test", roles = "USER")
     void testToggleCartItem_set() throws Exception {
-        Product testProduct = productRepository.save(new Product("브랜드3", "예쁜 신발", 14000, "img3.jpg"));
-        mockMvc.perform(patch("/api/product/cart/" + testProduct.getId())
+        Brand brand1 = new Brand(1L, "브랜드3");
+        Product testProduct = productRepository.save(new Product(brand1, "예쁜 신발", 14000, "img3.jpg"));
+        mockMvc.perform(patch("/api/cart/" + testProduct.getId())
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 담김 여부 변경"))
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data.quantity").value(1));
     }
 
     @Test
     @DisplayName("정상적인 장바구니에 상품 안 담기 요청")
     @WithMockUser(username = "test", roles = "USER")
     void testToggleCartItem_delete() throws Exception {
-        mockMvc.perform(patch("/api/product/cart/" + productId)
+        mockMvc.perform(patch("/api/cart/" + productId)
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 담김 여부 변경"))
-                .andExpect(jsonPath("$.data").value(0));
+                .andExpect(jsonPath("$.data").isEmpty());
     }
 
     @Test
     @DisplayName("정상적인 장바구니에 담긴 상품 수량 변경")
     @WithMockUser(username = "test", roles = "USER")
     void testUpsertCartItem_update() throws Exception {
-        mockMvc.perform(patch("/api/product/cart/" + productId + "/3")
+        mockMvc.perform(patch("/api/cart/" + productId + "/3")
                     .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 수량 변경 또는 저장"))
-                .andExpect(jsonPath("$.data").value(3));
+                .andExpect(jsonPath("$.data.quantity").value(3));
     }
 
     @Test
     @DisplayName("정상적인 장바구니에 담긴 상품 수량 저장")
     @WithMockUser(username = "test", roles = "USER")
     void testUpsertCartItem_set() throws Exception {
-        Product testProduct = productRepository.save(new Product("브랜드3", "예쁜 신발", 14000, "img3.jpg"));
-        mockMvc.perform(patch("/api/product/cart/" + testProduct.getId() + "/3")
+        Brand brand1 = new Brand(1L, "브랜드3");
+        Product testProduct = productRepository.save(new Product(brand1, "예쁜 신발", 14000, "img3.jpg"));
+        mockMvc.perform(patch("/api/cart/" + testProduct.getId() + "/3")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 수량 변경 또는 저장"))
-                .andExpect(jsonPath("$.data").value(3));
+                .andExpect(jsonPath("$.data.quantity").value(3));
     }
 
     @Test
     @DisplayName("정상적인 장바구니 목록 삭제")
     @WithMockUser(username = "test", roles = "USER")
     void testDeleteProductsInCart() throws Exception {
-        mockMvc.perform(delete("/api/product/cart")
+        mockMvc.perform(delete("/api/cart")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 삭제"));
@@ -159,7 +163,7 @@ public class CartIntegrationTest {
     @DisplayName("정상적인 장바구니 상품 삭제")
     @WithMockUser(username = "test", roles = "USER")
     void testDeleteCartItem() throws Exception {
-        mockMvc.perform(delete("/api/product/cart/" + productId)
+        mockMvc.perform(delete("/api/cart/" + productId)
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 삭제"));
@@ -173,7 +177,7 @@ public class CartIntegrationTest {
     @DisplayName("장바구니에 없는 상품을 장바구니에서 삭제")
     @WithMockUser(username = "test", roles = "USER")
     void testDeleteCartItem_fail() throws Exception {
-        mockMvc.perform(delete("/api/product/cart/9999")
+        mockMvc.perform(delete("/api/cart/9999")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("장바구니 상품 삭제"));

@@ -20,6 +20,9 @@ server:
     encoding:
       force-response: true
 
-jwt:
-  key: skjdfh9823rjf2n38sdljgq9sdu3rnf9sdjvnsdfo3289rjfasdgj98sdvnsdf98sdf
-  expiration: 1800000 # 7일=604800000(ms)
+secret:
+  jwt:
+    key: skjdfh9823rjf2n38sdljgq9sdu3rnf9sdjvnsdfo3289rjfasdgj98sdvnsdf98sdf
+    expiration: 3600000 # 7일=604800000(ms)
+  aes:
+    key: 0534086764069754

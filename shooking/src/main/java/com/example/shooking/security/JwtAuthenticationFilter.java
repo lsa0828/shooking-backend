@@ -2,6 +2,7 @@ package com.example.shooking.security;
 
 import com.example.shooking.entity.Member;
 import com.example.shooking.service.MemberService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Date;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -27,9 +29,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String username = tokenProvider.getUsernameFromToken(token);
             Member member = memberService.loadUserByUsername(username);
 
+            Claims claims = tokenProvider.getClaims(token);
+            Date expiration = claims.getExpiration();
+            long now = System.currentTimeMillis();
+            long remaining = expiration.getTime() - now;
+            if (remaining < 30 * 60 * 1000) {
+                String newToken = tokenProvider.generateToken(member);
+                response.setHeader("X-ACCESS-TOKEN", newToken);
+            }
+
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member, null, member.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         }
 

@@ -4,6 +4,7 @@ import com.example.shooking.dto.*;
 import com.example.shooking.entity.Member;
 import com.example.shooking.security.JwtTokenProvider;
 import com.example.shooking.service.MemberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +26,17 @@ public class MemberController {
     private final JwtTokenProvider tokenProvider;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest registerRequest) {
         if (memberService.existsByEmail(registerRequest.getUsername())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.error("이미 존재하는 이메일입니다."));
+                    .body(ApiResponse.error("이미 존재하는 아이디입니다."));
         }
         MemberDTO dto = memberService.saveMember(registerRequest);
         return ResponseEntity.ok().body(ApiResponse.success("회원가입이 완료되었습니다.", dto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -52,7 +53,7 @@ public class MemberController {
             return ResponseEntity.ok().body(ApiResponse.success("로그인 성공", jwtResponse));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.error("이메일 또는 비밀번호가 잘못되었습니다."));
+                    .body(ApiResponse.error("아이디 또는 비밀번호가 잘못되었습니다."));
         }
     }
 

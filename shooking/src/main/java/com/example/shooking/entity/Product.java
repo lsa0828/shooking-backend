@@ -11,23 +11,28 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_seq_gen")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq_gen")
     @SequenceGenerator(
-            name = "member_seq_gen",
-            sequenceName = "member_seq",
+            name = "product_seq_gen",
+            sequenceName = "product_seq",
             allocationSize = 1
     )
     private Long id;
-    @Column(nullable = false)
-    private String brand;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "brand_id", nullable = false)
+    private Brand brand;
+
     @Column(nullable = false)
     private String description;
+
     @Column(nullable = false)
     private Integer price;
+
     @Column(name = "image_path", nullable = false)
     private String imagePath;
 
-    public Product(String brand, String description, Integer price, String imagePath) {
+    public Product(Brand brand, String description, Integer price, String imagePath) {
         this.brand = brand;
         this.description = description;
         this.price = price;

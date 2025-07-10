@@ -1,6 +1,7 @@
 package com.example.shooking.entity;
 
 import com.example.shooking.dto.CardDTO;
+import com.example.shooking.util.AESUtil;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

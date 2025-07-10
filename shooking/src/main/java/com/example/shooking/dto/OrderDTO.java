@@ -28,12 +28,12 @@ public class OrderDTO {
         Card card = orderSheet.getCard();
         this.id = orderSheet.getId();
         this.productId = product.getId();
-        this.brand = product.getBrand();
+        this.brand = product.getBrand().getName();
         this.description = product.getDescription();
         this.price = product.getPrice();
         this.quantity = orderSheet.getQuantity();
         this.orderedAt = orderSheet.getOrderedAt();
         this.cardId = card.getId();
-        this.cardNumber = card.getCardNumber().substring(0, 4);
+        this.cardNumber = card.getCardNumber();
     }
 }

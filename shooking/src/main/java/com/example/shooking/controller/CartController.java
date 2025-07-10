@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/product/cart")
+@RequestMapping("/api/cart")
 public class CartController {
     private final CartService cartService;
 
@@ -31,22 +31,22 @@ public class CartController {
     @GetMapping("/{productId}")
     public ResponseEntity<?> showQuantityOfProductInCart(@CurrentMember Member member, @PathVariable Long productId) {
         Long memberId = member.getId();
-        Integer quantity = cartService.getQuantityOfProductInCart(memberId, productId);
-        return ResponseEntity.ok(ApiResponse.success("장바구니 상품 수량 조회", quantity));
+        CartDTO cartDTO = cartService.getQuantityOfProductInCart(memberId, productId);
+        return ResponseEntity.ok(ApiResponse.success("장바구니 상품 수량 조회", cartDTO));
     }
 
     @PatchMapping("/{productId}")
     public ResponseEntity<?> toggleCartItem(@CurrentMember Member member, @PathVariable Long productId) {
         Long memberId = member.getId();
-        Integer quantity = cartService.toggleCartItem(memberId, productId);
-        return ResponseEntity.ok(ApiResponse.success("장바구니 상품 담김 여부 변경", quantity));
+        CartDTO cartDTO = cartService.toggleCartItem(memberId, productId);
+        return ResponseEntity.ok(ApiResponse.success("장바구니 상품 담김 여부 변경", cartDTO));
     }
 
     @PatchMapping("/{productId}/{quantity}")
     public ResponseEntity<?> upsertCartItem(@CurrentMember Member member, @PathVariable Long productId, @PathVariable Integer quantity) {
         Long memberId = member.getId();
-        Integer savedQuantity = cartService.upsertCartItem(memberId, productId, quantity);
-        return ResponseEntity.ok(ApiResponse.success("장바구니 상품 수량 변경 또는 저장", savedQuantity));
+        CartDTO cartDTO = cartService.upsertCartItem(memberId, productId, quantity);
+        return ResponseEntity.ok(ApiResponse.success("장바구니 상품 수량 변경 또는 저장", cartDTO));
     }
 
     @DeleteMapping

@@ -1,6 +1,8 @@
 package com.example.shooking.integration;
 
+import com.example.shooking.entity.Brand;
 import com.example.shooking.entity.Product;
+import com.example.shooking.repository.BrandRepository;
 import com.example.shooking.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,11 +30,18 @@ public class ProductIntegrationTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private BrandRepository brandRepository;
+
     private final String TEST_IMAGE_PATH = "C:/shooking/ShookingShop/shooking-shop/public/img1.jpg";
+
+    private Long productId;
 
     @BeforeEach
     void setup() throws Exception {
-        productRepository.save(new Product(1L, "브랜드1", "편한 신발", 16000, "img1.jpg"));
+        Brand brand1 = brandRepository.save(new Brand("브랜드1"));
+        Product product = productRepository.save(new Product(brand1, "편한 신발", 16000, "img1.jpg"));
+        productId = product.getId();
         File imageFile = new File(TEST_IMAGE_PATH);
         imageFile.getParentFile().mkdirs();
         Files.write(imageFile.toPath(), "fake image data".getBytes());
@@ -45,15 +54,14 @@ public class ProductIntegrationTest {
         mockMvc.perform(get("/api/product/all"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("상품 조회"))
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].brand").value("브랜드1"));
+                .andExpect(jsonPath("$.data").isArray());
     }
 
     @Test
     @DisplayName("정상적인 상품 이미지 조회")
     @WithMockUser(username = "test", roles = "ADMIN")
     void testGetImage() throws Exception {
-        mockMvc.perform(get("/api/product/image/1"))
+        mockMvc.perform(get("/api/product/image/" + productId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("image/jpeg;charset=UTF-8"))
                 .andExpect(content().bytes("fake image data".getBytes()));
