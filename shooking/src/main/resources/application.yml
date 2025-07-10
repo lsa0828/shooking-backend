@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521:xe
+    username: c##shooking
+    password: shop
+    driver-class-name: oracle.jdbc.OracleDriver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      show-sql: true
+      properties:
+        hibernate:
+          format_sql: true
+          jdbc:
+            lob:
+              non_contextual_creation: true
+
+server:
+  servlet:
+    encoding:
+      force-response: true
+
+secret:
+  jwt:
+    key: skjdfh9823rjf2n38sdljgq9sdu3rnf9sdjvnsdfo3289rjfasdgj98sdvnsdf98sdf
+    expiration: 3600000 # 7일=604800000(ms)
+  aes:
+    key: 0534086764069754
