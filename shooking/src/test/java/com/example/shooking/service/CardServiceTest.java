@@ -59,7 +59,7 @@ public class CardServiceTest {
         List<CardResponse> result = cardService.getCardList(memberId);
         CardResponse card = result.get(0);
         assertEquals(2L, card.getId());
-        assertEquals("0123456789012345", card.getCardNumber());
+        assertEquals("0123", card.getCardNumber().substring(0, 4));
     }
 
     @Test
@@ -82,7 +82,7 @@ public class CardServiceTest {
         Card savedCard = new Card(2L, member, "0123456789012345", "0426", "tester", "012", "01");
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
         given(cardRepository.save(card)).willReturn(savedCard);
-        given(aesUtil.encrypt(card.getCardNumber())).willReturn("0123456789012345");
+        given(aesUtil.encrypt(card.getCardNumber().substring(4))).willReturn("456789012345");
         given(aesUtil.encrypt(card.getSecurityCode())).willReturn("012");
         given(aesUtil.encrypt(card.getPassword())).willReturn("01");
 

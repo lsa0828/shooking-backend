@@ -59,14 +59,14 @@ public class CardService {
     }
 
     public Card getEncryptedCard(Card card) {
-        card.setCardNumber(aesUtil.encrypt(card.getCardNumber()));
+        card.setCardNumber(card.getCardNumber().substring(0, 4) + aesUtil.encrypt(card.getCardNumber().substring(4)));
         card.setSecurityCode(aesUtil.encrypt(card.getSecurityCode()));
         card.setPassword(aesUtil.encrypt(card.getPassword()));
         return card;
     }
 
     public Card getDecryptedCard(Card card) {
-        card.setCardNumber(aesUtil.decrypt(card.getCardNumber()));
+        card.setCardNumber(card.getCardNumber().substring(0, 4) + aesUtil.decrypt(card.getCardNumber().substring(4)));
         card.setSecurityCode(aesUtil.decrypt(card.getSecurityCode()));
         card.setPassword(aesUtil.encrypt((card.getPassword())));
         return card;
